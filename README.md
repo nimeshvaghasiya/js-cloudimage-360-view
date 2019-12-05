@@ -1,4 +1,4 @@
-[![Release](https://img.shields.io/badge/release-v2.0.4-blue.svg)](https://github.com/scaleflex/js-cloudimage-360-view/releases)
+[![Release](https://img.shields.io/badge/release-v2.3.1-blue.svg)](https://github.com/scaleflex/js-cloudimage-360-view/releases)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)](#contributing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Scaleflex team](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-the%20Scaleflex%20team-6986fa.svg)](https://www.scaleflex.it/en/home)
@@ -24,6 +24,8 @@
 		•
 		<a href="https://codesandbox.io/s/6479n17j73?fontsize=14&module=%2Findex.html" target="_blank">Code Sandbox</a>
 		•
+		<a href="https://youtu.be/zXUgrvZ7FMc" target="_blank">Video Tutorial</a>
+		•
 		<a href="https://medium.com/cloudimage/e-merchandising-how-can-a-360-view-of-your-products-boost-your-revenue-24b16eb9cd62" target="_blank">Why</a>
 	</strong>
 </p>
@@ -44,7 +46,9 @@ powered by [Cloudimage](https://www.cloudimage.io/)
 * [Demo](#demo)
 * [Step 1: Installation](#installation)
 * [Step 2: Initialize](#initialize)
+* [Methods](#methods)
 * [Configuration](#configuration)
+* [Controls](#controls)
 * [Cloudimage responsive integration](#cloudimage-responsive-integration)
 * [Lazy loading integration](#lazy-loading)
 * [Best practices](#best-practices)
@@ -64,7 +68,13 @@ To see the Cloudimage 360 view plugin in action, please check out the
 Add script tag with CDN link to js-cloudimage-360-view lib after all content in body tag
 
 ```javascript
-<script src="https://cdn.scaleflex.it/filerobot/js-cloudimage-360-view/v2.0.4.min.js"></script>
+<script src="https://cdn.scaleflex.it/plugins/js-cloudimage-360-view/2.3.1/js-cloudimage-360-view.min.js"></script>
+```
+
+You may also use major version number instead of fixed version to have the latest version available.
+
+```javascript
+<script src="https://cdn.scaleflex.it/plugins/js-cloudimage-360-view/2/js-cloudimage-360-view.min.js"></script>
 ```
 
 ## <a name="initialize"></a>Step 2: Initialize
@@ -82,6 +92,47 @@ After adding the js-cloudimage-360-view lib, simply initialize it with **class n
 ```
 
 <a href="https://codesandbox.io/s/6479n17j73?fontsize=14&module=%2Findex.html"><img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="edit in codesandbox"/></a>
+
+## <a name="methods"></a> Methods
+
+### init
+
+###### Type: **Function**
+
+Initialization of js cloudimage 360 view plugin.
+
+```javascript
+window.CI360.init();
+```
+
+> NOTE: initialization of the plugin runs on the script load. In case you need to postpone the initialization of the plugin you can disable it with **notInitOnLoad** param
+> ```javascript
+> <script>window.CI360 = { notInitOnLoad: true }</script>
+> <script src="https://cdn.scaleflex.it/plugins/js-cloudimage-360-view/2/js-cloudimage-360-view.min.js"></script>
+> <script>window.CI360.init(); // initialize the plugin when you need</script>
+> ```
+
+### destroy
+
+###### Type: **Function**
+
+Destroying a cloudimage 360 viewer instance will reset the HTML to its original state.
+
+```javascript
+window.CI360.destroy();
+```
+<a href="https://codesandbox.io/s/js-cloudimage-360-view-initdestroy-y1il9">
+	<img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="edit in codesandbox"/></a>
+
+### getActiveIndexByID
+
+###### Type: **Function**
+
+Get the {index} of the image that is being viewed.
+
+```javascript
+window.CI360.getActiveIndexByID('id_of_product');
+```
 
 ## <a name="configuration"></a> Config
 
@@ -149,7 +200,13 @@ Autoplay 360 spin view on load.
 
 ###### Type: **Number** | Default: **150** | _optional_
 
-Speed of changing frames in milliseconds.
+Speed of changing frames for autoplay in milliseconds.
+
+### data-drag-speed (or drag-speed)
+
+###### Type: **Number** | Default: **150** | _optional_
+
+Speed Factor of changing frames on drag event.
 
 ### data-spin-reverse (or spin-reverse)
 
@@ -169,11 +226,47 @@ Apply box shadow for container.
 
 Display 360 view line at the bottom of container.
 
+### data-control-reverse (or control-reverse)
+
+###### Type: **Bool** | Default: **false** | _optional_
+
+Spin direction using controls, by default it uses counterclockwise (image indexes from 1 to data-amount).
+
+### data-stop-at-edges (or stop-at-edges)
+
+###### Type: **Bool** | Default: **false** | _optional_
+
+Blocks repeating images after reaching last image (or first image in oposite direction)
+
 ### data-bottom-circle-offset (or bottom-circle-offset)
 
 ###### Type: **Number** | Default: **5** | _optional_
 
 Bottom offset for 360 view line.
+
+### data-index-zero-base (or index-zero-base)
+
+###### Type: **Number** | _optional_
+
+Left zero padding on filename. For example: index-zero-base="4" => image index will be "0004"
+
+### data-image-list (or image-list)
+
+###### Type: **Array** | _optional_
+
+Option to add list of images instead of `folder` & `filename`.
+
+example:
+
+```javascript
+data-folder="https://scaleflex.airstore.io/demo/360-car/"
+data-image-list='[
+   "iris-1.jpeg",
+   "iris-4.jpeg",
+   "https://scaleflex.airstore.io/demo/360-car/iris-12.jpeg",
+   "https://scaleflex.airstore.io/demo/360-car/iris-15.jpeg"
+   ]’
+```
 
 ### data-lazyload (or lazyload)
 
@@ -186,6 +279,67 @@ Only 360 view images close to the client's viewport will be loaded, hence accele
 ###### Type: **String** | Default: **lazyload** | _optional_
 
 Helper class to apply lazy-loading depending on library you choose, see [Lazy loading](#lazy-loading)
+
+## <a name="controls"></a> Controls
+
+You can add controls by adding elements with the following classes: **cloudimage-360-prev**, **cloudimage-360-next**
+
+### Example CSS
+```css
+.cloudimage-360 .cloudimage-360-prev, .cloudimage-360 .cloudimage-360-next {
+	padding: 8px;
+	background: rgba(255, 255, 255, 0.5);
+	border: none;
+	border-radius: 4px;
+}
+.cloudimage-360 .cloudimage-360-prev:focus, .cloudimage-360 .cloudimage-360-next:focus {
+	outline: none;
+}
+.cloudimage-360 .cloudimage-360-prev {
+	display: none;
+	position: absolute;
+	z-index: 100;
+	top: calc(50% - 15px);
+	left: 20px;
+}
+.cloudimage-360 .cloudimage-360-next {
+	display: none;
+	position: absolute;
+	z-index: 100;
+	top: calc(50% - 15px);
+	right: 20px;
+}
+.cloudimage-360 .cloudimage-360-prev:before, .cloudimage-360 .cloudimage-360-next:before {
+	content: '';
+	display: block;
+	width: 30px;
+	height: 30px;
+	background: 50% 50% / cover no-repeat;
+}
+.cloudimage-360 .cloudimage-360-prev:before {
+	background-image: url('https://cdn.scaleflex.it/plugins/js-cloudimage-360-view/assets/img/arrow-left.svg');
+}
+.cloudimage-360 .cloudimage-360-next:before {
+	background-image: url('https://cdn.scaleflex.it/plugins/js-cloudimage-360-view/assets/img/arrow-right.svg');
+}
+.cloudimage-360 .cloudimage-360-prev.not-active, .cloudimage-360 .cloudimage-360-next.not-active {
+	opacity: 0.4;
+	cursor: default;
+}
+```
+### Example HTML
+```html
+<div
+	class="cloudimage-360"
+	data-folder="https://scaleflex.airstore.io/demo/indoor/"
+	data-filename="{index}.jpeg"
+>
+	<button class="cloudimage-360-prev"></button>
+	<button class="cloudimage-360-next"></button>
+</div>
+```
+
+<a href="https://codesandbox.io/s/js-cloudimage-360-view-361eb?fontsize=14"><img src="https://codesandbox.io/static/img/play-codesandbox.svg" alt="edit in codesandbox"/></a>
 
 ## <a name="cloudimage-responsive-integration"/> Cloudimage Responsive Integration
 

@@ -1,27 +1,39 @@
 const get360ViewProps = (image) => ({
   folder: attr(image, 'folder') || attr(image, 'data-folder') || '/',
   filename: attr(image, 'filename') || attr(image, 'data-filename') || 'image-{index}.jpg',
+  imageList: attr(image, 'image-list') || attr(image, 'data-image-list') || null,
+  indexZeroBase: parseInt(attr(image, 'index-zero-base') || attr(image, 'data-index-zero-base') || 0, 10),
   amount: parseInt(attr(image, 'amount') || attr(image, 'data-amount') || 36, 10),
-  speed: parseInt(attr(image, 'speed') || attr(image, 'data-speed') || 150, 10),
-  keys: (attr(image, 'keys') !== null) || (attr(image, 'data-keys') !== null),
+  speed: parseInt(attr(image, 'speed') || attr(image, 'data-speed') || 80, 10),
+  dragSpeed: parseInt(attr(image, 'drag-speed') || attr(image, 'data-drag-speed') || 150, 10),
+  keys: isTrue(image, 'keys'),
   boxShadow: attr(image, 'box-shadow') || attr(image, 'data-box-shadow'),
-  autoplay: (attr(image, 'autoplay') !== null) || (attr(image, 'data-autoplay') !== null),
-  autoplayReverse: (attr(image, 'autoplay-reverse') !== null) || (attr(image, 'data-autoplay-reverse') !== null),
-  bottomCircle: (attr(image, 'bottom-circle') !== null) || (attr(image, 'data-bottom-circle') !== null),
-  fullScreen: (attr(image, 'full-screen') !== null) || (attr(image, 'data-full-screen') !== null),
+  autoplay: isTrue(image, 'autoplay'),
+  autoplayReverse: isTrue(image, 'autoplay-reverse'),
+  bottomCircle: isTrue(image, 'bottom-circle'),
+  fullScreen: isTrue(image, 'full-screen'),
   magnifier: ((attr(image, 'magnifier') !== null) || (attr(image, 'data-magnifier') !== null)) &&
-  parseInt(attr(image, 'magnifier') || attr(image, 'data-magnifier'), 10),
+    parseInt(attr(image, 'magnifier') || attr(image, 'data-magnifier'), 10),
   bottomCircleOffset: parseInt(attr(image, 'bottom-circle-offset') || attr(image, 'data-bottom-circle-offset') || 5, 10),
   ratio: parseFloat(attr(image, 'ratio') || attr(image, 'data-ratio') || 0) || false,
-  responsive: (attr(image, 'responsive') !== null) || (attr(image, 'data-responsive') !== null),
+  responsive: isTrue(image, 'responsive'),
   ciToken: attr(image, 'responsive') || attr(image, 'data-responsive') || 'demo',
   ciSize: attr(image, 'size') || attr(image, 'data-size'),
   ciOperation: attr(image, 'operation') || attr(image, 'data-operation') || 'width',
   ciFilters: attr(image, 'filters') || attr(image, 'data-filters') || 'q35',
-  lazyload: (attr(image, 'lazyload') !== null) || (attr(image, 'data-lazyload') !== null),
+  lazyload: isTrue(image, 'lazyload'),
   lazySelector: attr(image, 'lazyload-selector') || attr(image, 'data-lazyload-selector') || 'lazyload',
-  spinReverse: (attr(image, 'spin-reverse') !== null) || (attr(image, 'data-spin-reverse') !== null)
+  spinReverse: isTrue(image, 'spin-reverse'),
+  controlReverse: isTrue(image, 'control-reverse'),
+  stopAtEdges: isTrue(image, 'stop-at-edges')
 });
+
+const isTrue = (image, type) => {
+  const imgProp = attr(image, type);
+  const imgDataProp = attr(image, `data-${type}`);
+
+  return (imgProp !== null && imgProp !== 'false') || (imgDataProp !== null && imgDataProp !== 'false');
+};
 
 const attr = (element, attribute) => element.getAttribute(attribute);
 
@@ -130,7 +142,7 @@ const setCloseFullScreenViewStyles = (closeFullScreenIcon) => {
   closeFullScreenIcon.style.background = `url('https://scaleflex.ultrafast.io/https://scaleflex.airstore.io/filerobot/js-cloudimage-360-view/cross.svg') 50% 50% / cover no-repeat`;
 };
 
-const magnify = (container, img, src, glass, zoom) => {
+const magnify = (container, src, glass, zoom) => {
   let w, h, bw;
   glass.setAttribute("class", "img-magnifier-glass");
   container.prepend(glass);
@@ -250,6 +262,26 @@ const fit = (contains) => {
 
 const contain = fit(true);
 
+const addClass = (el, className) => {
+  if (el.classList)
+    el.classList.add(className);
+  else
+    el.className += ' ' + className;
+};
+
+const removeClass = (el, className) => {
+  if (el.classList)
+    el.classList.remove(className);
+  else
+    el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+};
+
+const pad = (n, width = 0) => {
+  n = n + '';
+
+  return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+};
+
 export {
   get360ViewProps,
   set360ViewIconStyles,
@@ -264,5 +296,8 @@ export {
   setCloseFullScreenViewStyles,
   getResponsiveWidthOfContainer,
   getSizeAccordingToPixelRatio,
-  contain
+  contain,
+  addClass,
+  removeClass,
+  pad
 }
